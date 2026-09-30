@@ -118,6 +118,7 @@ h2.sec{font-size:1.3rem;font-weight:900;margin:8px 0 12px}
 .card h3{margin:0 0 4px;font-size:1.05rem}
 .card p{margin:2px 0;font-size:.93rem}
 .card .meta{color:var(--muted)}
+.qty{display:inline-block;min-width:2.2em;margin-right:6px;padding:0 6px;border-radius:6px;background:var(--niyodo-soft);color:var(--ai);font-size:.8rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
 .steps{margin:8px 0 10px;padding-left:1.3em}
 .steps li{margin-bottom:8px}
 .steps .meta{display:block;font-size:.9rem}
