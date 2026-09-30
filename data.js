@@ -184,6 +184,15 @@ const DEFAULT_TODO = [
  ["Sort parking at Hotel Vista Matsuyama (2 nights)","Cheese"]
 ];
 
+/* Getting from Kansai Airport to the car rental shop: [step title, detail] */
+const CAR_DIRECTIONS = [
+ ["Walk to Kansai Airport Station","Follow the train signs from Terminal 1 arrivals (a few minutes). From Terminal 2, take the free shuttle bus to Terminal 1 first."],
+ ["Ride one stop to Rinku Town (りんくうタウン)","Nankai Airport Line (every ~15 min, all trains incl. Rapi:t stop) or JR Kansai Airport Line (every ~20 min). About 6 min, a few hundred yen; IC cards (ICOCA, Suica) work. Board towards Namba / Tennoji, away from the airport."],
+ ["Leave by Exit 2 (2番出口)","The shop is about a minute's walk, on the 1F of Rinku Pleasure Town Seacle, the mall with the big Ferris wheel."],
+ ["At the counter","Show passports, physical licences and IDPs for every driver, plus the main driver's physical credit card. Ask for an ETC card for tolls."]
+];
+const CAR_TIMING = "You land 14:35. Allow 45–60 min for immigration, bags and customs, then ~20 min to the shop, so you'll arrive around 15:45–16:00. Pickup is booked for 16:30: call the shop to ask about collecting early. Shop hours 08:00–20:00 daily; no airport shuttle.";
+
 /* Places to fetch live weather for, per day of October: [name, lat, lon] */
 const WX_SPOTS = {
  2:[["Tokushima",34.07,134.55]],

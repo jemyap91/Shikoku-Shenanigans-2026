@@ -118,6 +118,9 @@ h2.sec{font-size:1.3rem;font-weight:900;margin:8px 0 12px}
 .card h3{margin:0 0 4px;font-size:1.05rem}
 .card p{margin:2px 0;font-size:.93rem}
 .card .meta{color:var(--muted)}
+.steps{margin:8px 0 10px;padding-left:1.3em}
+.steps li{margin-bottom:8px}
+.steps .meta{display:block;font-size:.9rem}
 .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
 .pill{font-size:.78rem;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--niyodo-soft);color:var(--ai);white-space:nowrap}
 .pill.warn{background:var(--yuzu-soft);color:var(--yuzu)}
