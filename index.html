@@ -105,6 +105,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .wxn{margin:8px 0 0;font-size:.9rem}
 .wxsrc{margin:6px 0 0;font-size:.76rem;color:var(--muted)}
 .wxsrc a{color:var(--ai)}
+.wxmain+.wxmain{margin-top:8px}
+.wxsrc .copy{margin-left:4px}
+.err{color:var(--yuzu);font-size:.86rem}
 .picks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
 .picks li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:.88rem}
 .prow{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
@@ -381,17 +384,6 @@ const DEFAULT_TODO = [
  ["Sort parking at Hotel Vista Matsuyama (2 nights)","Cheese"]
 ];
 
-const DEFAULT_EXP = [
- {what:"Toyota car rental (¥99,110)", who:"Jem", sgd:831.89},
- {what:"EarthVelo, Tokushima", who:"Ben", sgd:239.35},
- {what:"Iya Valley Airbnb", who:"Jem", sgd:292.09},
- {what:"Toyoko Inn Kochi (3 rooms so far)", who:"Cheese", sgd:351.65},
- {what:"Ozu Airbnb", who:"Jem", sgd:320.73},
- {what:"Hotel Vista Matsuyama (3 rooms so far)", who:"Cheese", sgd:406.48},
- {what:"Konpira Machiya", who:"Ben", sgd:292},
- {what:"R Hotel Kansai Airport", who:"Ben", sgd:230}
-];
-
 /* ---------- Storage (per device) ---------- */
 const KEY="shikoku26:";
 function load(k,def){try{const v=localStorage.getItem(KEY+k);return v?JSON.parse(v):def}catch(e){return def}}
@@ -401,11 +393,22 @@ function save(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch(e){}}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function weatherBlock(d){
+  const live=liveWx&&liveWx.days[d];
+  const btn=`<button class="copy wxbtn" type="button"${wxBusy?" disabled":""}>${wxBusy?"Updating…":"Refresh"}</button>`;
+  const err=wxErr?`<p class="err">${esc(wxErr)}</p>`:"";
+  if(live){
+    const wet=Math.max(...live.map(w=>w.r||0))>=70, tip=wxTip(d,live);
+    return `<div class="wx${wet?" wet":""}">${live.map(w=>{const [i,c]=wmo(w.code);
+      return `<div class="wxmain"><span class="wxi" aria-hidden="true">${i}</span>
+      <div><b>${esc(w.n)}: ${esc(c)}</b><span class="wxs">${w.hi}° / ${w.lo}° · ${w.r==null?"?":w.r}% rain</span></div></div>`}).join("")}
+      ${tip?`<p class="wxn">${esc(tip)}</p>`:""}
+      <p class="wxsrc">Live forecast from Open-Meteo, updated ${ago(liveWx.at)}. ${btn}</p>${err}</div>`;
+  }
   const w=WEATHER[d]; if(!w) return "";
   return `<div class="wx${w.r>=70?" wet":""}"><div class="wxmain"><span class="wxi" aria-hidden="true">${w.i}</span>
     <div><b>${esc(w.c)}</b><span class="wxs">${w.hi}° / ${w.lo}° · ${w.r}% rain · ${esc(w.w)}</span></div></div>
     ${w.n?`<p class="wxn">${esc(w.n)}</p>`:""}
-    <p class="wxsrc">tenki.jp forecast, issued 30 Sep 15:00 JST. <a href="https://tenki.jp/week/8/" target="_blank" rel="noopener">Check latest</a></p></div>`;
+    <p class="wxsrc">tenki.jp forecast, issued 30 Sep 15:00 JST. ${btn}</p>${err}</div>`;
 }
 function picksBlock(d,t){
   const ps=[...(MEALS[d+"|"+t]||[]),...(SHOPS[d+"|"+t]||[])]; if(!ps.length) return "";
@@ -425,6 +428,58 @@ function addrBlock(s){
 }
 function wireCopy(root){root.querySelectorAll(".cp").forEach(b=>b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(b.dataset.t).then(()=>{b.textContent="Copied"},()=>{})})}
 function jstNow(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000+9*3600000)}
+
+/* ---------- Live weather (Open-Meteo, free, no key) ---------- */
+const WX_SPOTS={
+ 2:[["Tokushima",34.07,134.55]],
+ 3:[["Iya Valley",33.87,133.83],["Mt Tsurugi summit",33.854,134.094]],
+ 4:[["Iya Gorge",33.88,133.76],["Kochi",33.56,133.53]],
+ 5:[["Kochi",33.56,133.53]],
+ 6:[["Niyodo River",33.55,133.13],["Ozu",33.51,132.54]],
+ 7:[["Matsuyama",33.84,132.77]],
+ 8:[["Matsuyama",33.84,132.77]],
+ 9:[["Mt Ishizuchi summit",33.768,133.115],["Kotohira",34.19,133.82]],
+ 10:[["Kotohira",34.19,133.82],["Rinku",34.41,135.30]],
+ 11:[["Rinku",34.41,135.30]]
+};
+const WMO={0:["☀️","Clear"],1:["🌤","Mostly clear"],2:["⛅","Partly cloudy"],3:["☁️","Overcast"],45:["🌫","Fog"],48:["🌫","Fog"],
+ 51:["🌦","Light drizzle"],53:["🌦","Drizzle"],55:["🌧","Heavy drizzle"],56:["🌧","Freezing drizzle"],57:["🌧","Freezing drizzle"],
+ 61:["🌦","Light rain"],63:["🌧","Rain"],65:["🌧","Heavy rain"],66:["🌧","Freezing rain"],67:["🌧","Freezing rain"],
+ 71:["🌨","Light snow"],73:["🌨","Snow"],75:["🌨","Heavy snow"],77:["🌨","Snow grains"],
+ 80:["🌦","Showers"],81:["🌧","Heavy showers"],82:["⛈","Violent showers"],85:["🌨","Snow showers"],86:["🌨","Snow showers"],
+ 95:["⛈","Thunderstorms"],96:["⛈","Thunderstorms, hail"],99:["⛈","Thunderstorms, hail"]};
+const wmo=c=>WMO[c]||["🌡","Forecast"];
+function ago(t){const m=Math.round((Date.now()-t)/60000);
+  return m<1?"just now":m<60?`${m} min ago`:m<1440?`${Math.round(m/60)} h ago`:new Date(t).toLocaleString([], {day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+function wxTip(d,live){
+  const r=Math.max(...live.map(w=>w.r||0));
+  if(d===3)return "The summit is often windy and cold even on a warm day: bring the fleece.";
+  if(d===9)return "Recheck the night before. Skip the chains and Tengudake if it's wet."+(r>=50?" Rain looks likely.":"");
+  if(r>=60)return d===4?"Rain likely. Vine-bridge planks get slippery, so do Kazurabashi early and wear grippy shoes.":"Rain likely. Pack the shell.";
+  return "";
+}
+let liveWx=load("liveWx",null), wxBusy=false, wxErr="";
+async function refreshWeather(){
+  if(wxBusy)return; wxBusy=true; wxErr=""; renderRoute(); renderDay();
+  try{
+    const spots=[...new Map(Object.values(WX_SPOTS).flat().map(x=>[x[0],x])).values()];
+    const idx=Object.fromEntries(spots.map((x,k)=>[x[0],k]));
+    const q=new URLSearchParams({latitude:spots.map(x=>x[1]).join(","),longitude:spots.map(x=>x[2]).join(","),
+      daily:"weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",timezone:"Asia/Tokyo",forecast_days:"16"});
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?"+q); if(!r.ok)throw new Error("HTTP "+r.status);
+    let j=await r.json(); if(!Array.isArray(j))j=[j];
+    const days={};
+    for(const [d,list] of Object.entries(WX_SPOTS)){
+      const date="2026-10-"+String(d).padStart(2,"0");
+      const rows=list.map(x=>{const dl=j[idx[x[0]]]&&j[idx[x[0]]].daily; if(!dl)return null; const k=dl.time.indexOf(date); if(k<0)return null;
+        return {n:x[0],code:dl.weather_code[k],hi:Math.round(dl.temperature_2m_max[k]),lo:Math.round(dl.temperature_2m_min[k]),r:dl.precipitation_probability_max[k]}}).filter(Boolean);
+      if(rows.length)days[d]=rows;
+    }
+    liveWx={at:Date.now(),days}; save("liveWx",liveWx);
+  }catch(e){wxErr="Couldn't reach the weather service"+(liveWx?", showing the last update.":", showing the 30 Sep forecast.")}
+  finally{wxBusy=false; renderRoute(); renderDay()}
+}
+document.addEventListener("click",e=>{if(e.target.closest(".wxbtn"))refreshWeather()});
 
 /* ---------- Countdown ---------- */
 (function(){
@@ -452,7 +507,7 @@ let sel=todayIdx>=0?todayIdx:0;
 function renderRoute(){
   $("#routeList").innerHTML=DAYS.map((x,i)=>`<li><button aria-current="${i===sel}" data-i="${i}" aria-label="${x.dow} ${x.d} October, ${x.town}">
     ${i===todayIdx?'<span class="today-dot" title="Today"></span>':''}
-    <span class="stop">${x.d}</span><span class="dow">${x.dow} ${WEATHER[x.d]?WEATHER[x.d].i:""}</span><span class="town">${x.town}</span></button></li>`).join("");
+    <span class="stop">${x.d}</span><span class="dow">${x.dow} ${liveWx&&liveWx.days[x.d]?wmo(liveWx.days[x.d][0].code)[0]:WEATHER[x.d]?WEATHER[x.d].i:""}</span><span class="town">${x.town}</span></button></li>`).join("");
   document.querySelectorAll("#routeList button").forEach(b=>b.onclick=()=>{sel=+b.dataset.i;renderRoute();renderDay()});
 }
 function renderDay(){
@@ -499,41 +554,66 @@ function renderBookings(){
   $("#copyRes").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText("99909430100").then(()=>{e.target.textContent="Copied"},()=>{})};
 }
 
-/* ---------- Money ---------- */
-let people=load("people",["Jem","Ben","Cheese","Me"]);
-let exps=load("exps",DEFAULT_EXP);
+/* ---------- Money (live from Google Sheets) ---------- */
+const SHEET_ID="1onBN9bL7FD7nDCSwgh7FLyzwicHGUzXBRr-NDgy3sls";
+const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+let money=load("money",null), moneyBusy=false, moneyErr="";
+function parseCSV(t){
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true; else if(c===","){row.push(f);f=""}
+    else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
+    else f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}
+  return rows;
+}
+const num=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,""));return isNaN(n)?0:n};
+async function sheetCSV(sheet,range){
+  const q=new URLSearchParams({tqx:"out:csv",sheet,range,headers:"0"});
+  const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${q}`);
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  const t=await r.text(); if(/^\s*</.test(t))throw new Error("not shared");
+  return parseCSV(t);
+}
+async function refreshMoney(){
+  if(moneyBusy)return; moneyBusy=true; moneyErr=""; renderMoney();
+  try{
+    const [ex,sum]=await Promise.all([sheetCSV("Expenses","A6:L500"),sheetCSV("Summary","A4:D20")]);
+    const people=[];
+    for(const r of sum){const p=(r[0]||"").trim(); if(p==="Total")break; if(!p||p==="Person")continue;
+      people.push({p,paid:num(r[1]),share:num(r[2]),net:num(r[3])})}
+    const exps=ex.filter(r=>(r[1]||"").trim()).map(r=>({date:r[0],item:r[1],cat:r[2],who:r[3],sgd:num(r[6]),
+      split:people.filter((x,k)=>String(r[7+k]).toLowerCase()==="true").map(x=>x.p)}));
+    if(!people.length)throw new Error("empty");
+    money={at:Date.now(),people,exps}; save("money",money);
+  }catch(e){moneyErr="Couldn't load the sheet"+(money?", showing the last copy.":".")+
+    " Check it's shared as “Anyone with the link can view”."}
+  finally{moneyBusy=false; renderMoney()}
+}
 function renderMoney(){
-  const total=exps.reduce((a,e)=>a+(+e.sgd||0),0); const share=total/people.length;
-  const paid={}; people.forEach(p=>paid[p]=0); exps.forEach(e=>{if(paid[e.who]!==undefined)paid[e.who]+=+e.sgd||0});
-  const bal=people.map(p=>({p,v:paid[p]-share}));
-  // settle up
-  const cred=bal.filter(b=>b.v>0.005).map(b=>({...b})).sort((a,b)=>b.v-a.v);
-  const debt=bal.filter(b=>b.v<-0.005).map(b=>({p:b.p,v:-b.v})).sort((a,b)=>b.v-a.v);
+  const btn=`<button class="copy" id="moneyRefresh" type="button"${moneyBusy?" disabled":""}>${moneyBusy?"Updating…":"Refresh"}</button>`;
+  const head=`<h2 class="sec">Who's paid what</h2>
+  <p class="note">Live from the <a href="${SHEET_URL}" target="_blank" rel="noopener">Shikoku 2026 Expenses</a> sheet. Add or edit expenses there, then refresh here.
+  ${money?`Updated ${ago(money.at)}.`:""} ${btn}</p>${moneyErr?`<p class="err">${esc(moneyErr)}</p>`:""}`;
+  if(!money){$("#tab-money").innerHTML=head+(moneyBusy?`<p class="note">Loading…</p>`:"");wireMoney();return}
+  const {people,exps}=money, n=people.length;
+  const total=exps.reduce((a,e)=>a+e.sgd,0);
+  const cred=people.filter(b=>b.net>0.005).map(b=>({p:b.p,v:b.net})).sort((a,b)=>b.v-a.v);
+  const debt=people.filter(b=>b.net<-0.005).map(b=>({p:b.p,v:-b.net})).sort((a,b)=>b.v-a.v);
   const moves=[]; let i=0,j=0;
   while(i<debt.length&&j<cred.length){const m=Math.min(debt[i].v,cred[j].v);moves.push(`${esc(debt[i].p)} pays ${esc(cred[j].p)} <b>S$${m.toFixed(2)}</b>`);debt[i].v-=m;cred[j].v-=m;if(debt[i].v<0.005)i++;if(cred[j].v<0.005)j++}
-  $("#tab-money").innerHTML=`<h2 class="sec">Who's paid what</h2>
-  <p class="note">Rename the group here (the 4th slot is you):</p>
-  <div class="names">${people.map((p,k)=>`<input aria-label="Person ${k+1}" value="${esc(p)}" data-k="${k}">`).join("")}</div>
-  <div class="tablewrap"><table><thead><tr><th>Item</th><th>Paid by</th><th class="num">S$</th><th></th></tr></thead><tbody>
-  ${exps.map((e,k)=>`<tr><td>${esc(e.what)}</td><td>${esc(e.who)}</td><td class="num">${(+e.sgd).toFixed(2)}</td><td><button class="del copy" data-k="${k}" aria-label="Remove ${esc(e.what)}">✕</button></td></tr>`).join("")}
-  <tr><td><b>Total</b></td><td></td><td class="num"><b>${total.toFixed(2)}</b></td><td></td></tr></tbody></table></div>
-  <div class="addrow"><input id="exWhat" placeholder="What was it?"><select id="exWho">${people.map(p=>`<option>${esc(p)}</option>`).join("")}</select>
-    <input id="exAmt" type="number" step="0.01" inputmode="decimal" placeholder="S$"><button class="btn" id="exAdd">Add expense</button></div>
+  $("#tab-money").innerHTML=head+`
+  <div class="tablewrap"><table><thead><tr><th>Date</th><th>Item</th><th>Paid by</th><th class="num">S$</th></tr></thead><tbody>
+  ${exps.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.item)}${e.split.length&&e.split.length<n?`<br><span class="note">Split: ${esc(e.split.join(", "))}</span>`:""}</td><td>${esc(e.who)}</td><td class="num">${e.sgd.toFixed(2)}</td></tr>`).join("")}
+  <tr><td></td><td><b>Total</b></td><td></td><td class="num"><b>${total.toFixed(2)}</b></td></tr></tbody></table></div>
   <h2 class="sec" style="margin-top:22px">Balances</h2>
-  <p class="note">Split evenly four ways: S$${share.toFixed(2)} each.</p>
-  <div class="bal">${bal.map(b=>`<div>${esc(b.p)}<b class="${b.v>=0?"pos":"neg"}">${b.v>=0?"+":"−"}S$${Math.abs(b.v).toFixed(2)}</b></div>`).join("")}</div>
-  <div class="card"><h3>To settle up</h3>${moves.length?moves.map(m=>`<p>${m}</p>`).join(""):"<p>All square.</p>"}</div>
-  <p class="note">Kochi and Matsuyama are still at 3-room prices. Update those rows once Cheese tops up. <button class="copy" id="resetExp">Reset to original list</button></p>`;
-  document.querySelectorAll(".names input").forEach(inp=>inp.onchange=()=>{
-    const k=+inp.dataset.k,old=people[k],nv=inp.value.trim()||old; people[k]=nv;
-    exps.forEach(e=>{if(e.who===old)e.who=nv}); save("people",people); save("exps",exps); renderMoney()});
-  document.querySelectorAll("#tab-money .del").forEach(b=>b.onclick=()=>{exps.splice(+b.dataset.k,1);save("exps",exps);renderMoney()});
-  $("#exAdd").onclick=()=>{const w=$("#exWhat").value.trim(),a=parseFloat($("#exAmt").value);if(!w||!(a>0))return;
-    exps.push({what:w,who:$("#exWho").value,sgd:a});save("exps",exps);renderMoney()};
-  $("#resetExp").onclick=()=>{exps=JSON.parse(JSON.stringify(DEFAULT_EXP));save("exps",exps);renderMoney()};
+  <p class="note">From the sheet's Summary tab. Plus means the group owes them.</p>
+  <div class="bal">${people.map(b=>`<div>${esc(b.p)}<b class="${b.net>=0?"pos":"neg"}">${b.net>=0?"+":"−"}S$${Math.abs(b.net).toFixed(2)}</b><span class="note">Paid ${b.paid.toFixed(2)} · share ${b.share.toFixed(2)}</span></div>`).join("")}</div>
+  <div class="card"><h3>To settle up</h3>${moves.length?moves.map(m=>`<p>${m}</p>`).join(""):"<p>All square.</p>"}</div>`;
+  wireMoney();
 }
-
-
+function wireMoney(){$("#moneyRefresh").onclick=refreshMoney}
 
 /* ---------- Packing ---------- */
 const PACK_DEFAULT=[
@@ -659,6 +739,12 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
 });
 
 renderRoute(); renderDay(); renderBookings(); renderMoney(); renderPack(); renderShop(); renderTodo(); renderHeads();
+function autoRefresh(){
+  if(!liveWx||Date.now()-liveWx.at>30*60000)refreshWeather();
+  if(!money||Date.now()-money.at>5*60000)refreshMoney();
+}
+autoRefresh();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)autoRefresh()});
 </script>
 </body>
 </html>
