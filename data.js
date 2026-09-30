@@ -210,49 +210,51 @@ const WX_SPOTS = {
 /* Expenses sheet the Money tab reads (must be shared as "Anyone with the link can view") */
 const SHEET_ID = "1onBN9bL7FD7nDCSwgh7FLyzwicHGUzXBRr-NDgy3sls";
 
+/* Packing: [category, [[item, note, quantity], ...]]. Quantities are per person unless marked "· group" or "· car". */
 const PACK_DEFAULT = [
  ["Documents & money",[
-  ["Passport","Needed for car pickup and every tax-free purchase"],
-  ["Physical driver's licence + International Driving Permit","All drivers"],
-  ["Physical credit card in the primary driver's name","For the rental deposit"],
-  ["Yen cash + coin purse","Vine bridges, parking, rural shops and udon places are often cash only"],
+  ["Passport","Needed for car pickup and every tax-free purchase","1"],
+  ["Physical driver's licence + International Driving Permit","All drivers","1 each"],
+  ["Physical credit card in the primary driver's name","For the rental deposit","1"],
+  ["Yen cash + coin purse","Vine bridges, parking, rural shops and udon places are often cash only","1 purse"],
   ["Toyota reservation no. saved offline","99909430100"],
-  ["Travel insurance details","Covering driving and hiking"]]],
+  ["Travel insurance details","Covering driving and hiking","1"]]],
  ["Clothes for October",[
-  ["T-shirts / quick-dry tops","Lowlands are mild, roughly low-to-mid 20s °C"],
-  ["Warm mid-layer (fleece or light down)","Tsurugi (1,955 m) and Ishizuchi (1,982 m) summits can be near single digits and windy"],
-  ["Waterproof shell jacket","Mountain weather changes fast; early October can still bring rain"],
-  ["Hiking pants or shorts + a pair of long pants",""],
-  ["Clean socks without holes","Shoes come off at Kochi Castle, Ozu Castle, Matsuyama Castle and some restaurants"],
-  ["Something smart-casual for dinners",""],
-  ["Sleepwear",""]]],
+  ["Underwear","","7"],
+  ["T-shirts / quick-dry tops","Lowlands are mild, roughly low-to-mid 20s °C","6"],
+  ["Warm mid-layer (fleece or light down)","Tsurugi (1,955 m) and Ishizuchi (1,982 m) summits can be near single digits and windy","1"],
+  ["Waterproof shell jacket","Mountain weather changes fast; early October can still bring rain","1"],
+  ["Hiking pants or shorts + a pair of long pants","","2 + 1"],
+  ["Clean socks without holes","Shoes come off at Kochi Castle, Ozu Castle, Matsuyama Castle and some restaurants","7 pairs"],
+  ["Something smart-casual for dinners","","1 outfit"],
+  ["Sleepwear","","2"]]],
  ["Shoes",[
-  ["Hiking shoes with good grip","Ishizuchi chains, Nikobuchi ladders, wet stones at Nakatsu Gorge"],
-  ["Slip-on shoes or sandals","Easy on/off at castles, onsen and ryokan"]]],
+  ["Hiking shoes with good grip","Ishizuchi chains, Nikobuchi ladders, wet stones at Nakatsu Gorge","1 pair"],
+  ["Slip-on shoes or sandals","Easy on/off at castles, onsen and ryokan","1 pair"]]],
  ["Hiking day kit",[
-  ["Daypack (15–25 L)",""],
-  ["Grippy gloves","For the Ishizuchi kusari chains"],
-  ["Water bottle (1 L+) and snacks","Few shops up the mountains"],
-  ["Sunscreen, sunglasses and a cap",""],
-  ["Headlamp or small torch","Dark narrow roads in Iya and early starts"],
-  ["Blister plasters and basic first aid",""]]],
+  ["Daypack (15–25 L)","","1"],
+  ["Grippy gloves","For the Ishizuchi kusari chains","1 pair"],
+  ["Water bottle (1 L+) and snacks","Few shops up the mountains","1 bottle"],
+  ["Sunscreen, sunglasses and a cap","","1 each"],
+  ["Headlamp or small torch","Dark narrow roads in Iya and early starts","1"],
+  ["Blister plasters and basic first aid","","1 kit · group"]]],
  ["Onsen & toiletries",[
-  ["Small towel (tenugui)","For Iyaonsen, Dogo Onsen and hotel baths"],
-  ["Tattoo cover patches (if needed)","Some onsen refuse visible tattoos"],
-  ["Toiletries and any meds","Bring prescriptions in original packaging"],
-  ["Motion-sickness tablets","Iya and Route 439 are long winding drives"],
-  ["Insect repellent","Gorges and riverside stops"]]],
+  ["Small towel (tenugui)","For Iyaonsen, Dogo Onsen and hotel baths","2"],
+  ["Tattoo cover patches (if needed)","Some onsen refuse visible tattoos","as needed"],
+  ["Toiletries and any meds","Bring prescriptions in original packaging","1 bag"],
+  ["Motion-sickness tablets","Iya and Route 439 are long winding drives","~10 tablets"],
+  ["Insect repellent","Gorges and riverside stops","1 · group"]]],
  ["Tech & car",[
-  ["Plug adapter: Type A","Japan uses 2 flat pins at 100 V; Singapore's 3-pin Type G won't fit"],
-  ["Phone car mount + USB-C car charger",""],
-  ["Power bank","Carry-on only on the flight"],
-  ["eSIM or pocket Wi-Fi","Signal drops in the valleys; download offline Google Maps for Shikoku"],
-  ["Charging cables",""]]],
+  ["Plug adapter: Type A","Japan uses 2 flat pins at 100 V; Singapore's 3-pin Type G won't fit","2"],
+  ["Phone car mount + USB-C car charger","","1 set · car"],
+  ["Power bank","Carry-on only on the flight","1"],
+  ["eSIM or pocket Wi-Fi","Signal drops in the valleys; download offline Google Maps for Shikoku","1"],
+  ["Charging cables","","1 per device"]]],
  ["Group & misc",[
-  ["Foldable shopping bag / extra luggage space","Mont-bell, matcha, outlets"],
-  ["Small trash bags","Few public bins in Japan"],
-  ["Wet wipes and tissues","Some rural toilets lack paper towels"],
-  ["Reusable cutlery / chopsticks","For convenience store dinners in Iya"]]]
+  ["Foldable shopping bag / extra luggage space","Mont-bell, matcha, outlets","1"],
+  ["Small trash bags","Few public bins in Japan","~10 · group"],
+  ["Wet wipes and tissues","Some rural toilets lack paper towels","2 packs · group"],
+  ["Reusable cutlery / chopsticks","For convenience store dinners in Iya","1 set"]]]
 ];
 
 /* Shopping: [item, advice, [[when, where, note], ...]] */

@@ -224,14 +224,15 @@ function wireMoney(){$("#moneyRefresh").onclick=refreshMoney}
 
 /* ---------- Packing ---------- */
 let packState=load("pack",{}); let packCustom=load("packCustom",[]);
+const fmtQty=q=>(/^\d/.test(q)&&!/ /.test(q)?"×"+q:q).replace(" · group"," for the group").replace(" · car"," for the car");
 function renderPack(){
-  const all=PACK_DEFAULT.map(g=>[g[0],g[1].map(i=>({t:i[0],n:i[1]}))]);
+  const all=PACK_DEFAULT.map(g=>[g[0],g[1].map(i=>({t:i[0],n:i[1],q:i[2]||""}))]);
   if(packCustom.length) all.push(["Added by you",packCustom.map((c,k)=>({t:c,n:"",k}))]);
   const total=all.reduce((a,g)=>a+g[1].length,0), done=all.reduce((a,g)=>a+g[1].filter(i=>packState[i.t]).length,0);
-  $("#tab-pack").innerHTML=`<h2 class="sec">Packing list</h2><p class="note">${done} of ${total} packed. Ticks are saved on this device.</p>`+
+  $("#tab-pack").innerHTML=`<h2 class="sec">Packing list</h2><p class="note">${done} of ${total} packed. Ticks are saved on this device.</p><p class="note">Quantities are per person for the 10 days, assuming one laundry run mid-trip. Items marked “group” or “car” only need one between the four of you.</p>`+
    all.map(g=>`<div class="card"><h3>${esc(g[0])}</h3>${g[1].map(i=>{const id="pk"+btoa(unescape(encodeURIComponent(i.t))).replace(/[^a-z0-9]/gi,"");
      return `<div class="check ${packState[i.t]?"checked":""}"><input type="checkbox" id="${id}" data-t="${esc(i.t)}" ${packState[i.t]?"checked":""}>
-     <label for="${id}">${esc(i.t)}${i.n?`<span class="who">${esc(i.n)}</span>`:""}</label>${i.k!==undefined?`<button class="del pdel" data-k="${i.k}" aria-label="Remove">×</button>`:""}</div>`}).join("")}</div>`).join("")+
+     <label for="${id}">${i.q?`<span class="qty">${esc(fmtQty(i.q))}</span>`:""}${esc(i.t)}${i.n?`<span class="who">${esc(i.n)}</span>`:""}</label>${i.k!==undefined?`<button class="del pdel" data-k="${i.k}" aria-label="Remove">×</button>`:""}</div>`}).join("")}</div>`).join("")+
    `<div class="addrow"><input id="pkNew" placeholder="Add an item"><button class="btn" id="pkAdd">Add</button><button class="btn ghost" id="pkReset">Untick all</button></div>`;
   document.querySelectorAll("#tab-pack input[type=checkbox]").forEach(c=>c.onchange=()=>{packState[c.dataset.t]=c.checked;save("pack",packState);renderPack()});
   document.querySelectorAll("#tab-pack .pdel").forEach(b=>b.onclick=()=>{packCustom.splice(+b.dataset.k,1);save("packCustom",packCustom);renderPack()});
