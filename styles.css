@@ -61,7 +61,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
 /* Timeline */
 .tl{list-style:none;margin:0;padding:0;position:relative}
-.tl li{display:grid;grid-template-columns:62px 1fr;gap:12px;position:relative}
+.tl>li{display:grid;grid-template-columns:62px 1fr;gap:12px;position:relative}
 .tl .time{font-weight:700;font-size:.9rem;text-align:right;padding-top:12px;font-variant-numeric:tabular-nums}
 .tl .time span{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
 .tl .body{border-left:3px solid var(--line);padding:10px 0 14px 16px;position:relative}
@@ -158,6 +158,6 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:now
   .route .stop{transition:transform .2s ease,background .2s ease}
 }
 @media (max-width:420px){
-  .tl li{grid-template-columns:52px 1fr;gap:8px}
+  .tl>li{grid-template-columns:52px 1fr;gap:8px}
   .tl .body{padding-left:13px}
 }

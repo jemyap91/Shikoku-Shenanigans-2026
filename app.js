@@ -30,7 +30,7 @@ function picksBlock(d,t){
   const ps=[...(MEALS[d+"|"+t]||[]),...(SHOPS[d+"|"+t]||[])]; if(!ps.length) return "";
   return `<ul class="picks">${ps.map(p=>{
     const shut=/closed|not found/i.test(p.h);
-    const url=p.id?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.id}`:"";
+    const url=p.id?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n)}&query_place_id=${p.id}`:p.q?mapUrl(p.q):"";
     return `<li><div class="prow"><span>${p.tag?`<span class="stag">${esc(p.tag)}</span>`:""}${url?`<a href="${url}" target="_blank" rel="noopener">${esc(p.n)}</a>`:`<b>${esc(p.n)}</b>`}</span><span class="hrs${shut?" shut":""}">${esc(p.h)}</span></div>${p.note?`<span class="pnote">${esc(p.note)}</span>`:""}</li>`}).join("")}</ul>`;
 }
 function mapUrl(a){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a)}
