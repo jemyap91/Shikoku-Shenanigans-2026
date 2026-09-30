@@ -152,7 +152,11 @@ function renderBookings(){
     <p class="meta">Shop 072-463-0100 · Reservation centre 0800-7000-815 (08:00–20:00)</p>
     <p class="meta">¥99,110 total, S$831.89</p>
     <p class="meta" style="margin-top:8px">Tip: Japanese car navs can usually find a place by its phone number. Use the Call numbers below.</p>
-    <p style="margin-top:8px">Bring: passport, physical licence, IDP, physical credit card in the primary driver's name.</p></div>
+    <p style="margin-top:8px">Bring: passport, physical licence, IDP, physical credit card in the primary driver's name.</p>
+    <h3 style="margin-top:14px">Getting there from Kansai Airport</h3>
+    <ol class="steps">${CAR_DIRECTIONS.map(s=>`<li><b>${esc(s[0])}</b><span class="meta">${esc(s[1])}</span></li>`).join("")}</ol>
+    <p class="meta">${esc(CAR_TIMING)}</p>
+    <p style="margin-top:8px"><a class="copy" href="${mapUrl("Toyota Rent a Car Rinku Town Station, Rinku Pleasure Town Seacle, Izumisano")}" target="_blank" rel="noopener">Open in Maps</a></p></div>
   <h2 class="sec" style="margin-top:22px">Stays</h2>${stayCards}`;
   wireCopy($("#tab-bookings"));
   $("#copyRes").onclick=e=>{navigator.clipboard&&navigator.clipboard.writeText("99909430100").then(()=>{e.target.textContent="Copied"},()=>{})};
