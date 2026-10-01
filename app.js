@@ -26,6 +26,14 @@ function weatherBlock(d){
     ${w.n?`<p class="wxn">${esc(w.n)}</p>`:""}
     <p class="wxsrc">tenki.jp forecast, issued 30 Sep 15:00 JST. ${btn}</p>${err}</div>`;
 }
+function runBlock(d){
+  const r=RUNS[d]; if(!r) return "";
+  const [o,...rest]=r.wp, dest=rest.pop();
+  const url="https://www.google.com/maps/dir/?api=1&travelmode=walking&origin="+encodeURIComponent(o)+"&destination="+encodeURIComponent(dest)+(rest.length?"&waypoints="+encodeURIComponent(rest.join("|")):"");
+  return `<div class="run"><p class="runh"><span class="stag">Run</span><b>${esc(r.name)}</b> <span class="hrs">${esc(r.km)}</span></p>
+    <p class="wxs">${esc(r.when)}</p><p class="runr">${esc(r.route)}</p>${r.note?`<p class="wxs">${esc(r.note)}</p>`:""}
+    <p style="margin-top:6px"><a class="copy" href="${url}" target="_blank" rel="noopener">Route in Maps</a></p></div>`;
+}
 function picksBlock(d,t){
   const ps=[...(MEALS[d+"|"+t]||[]),...(SHOPS[d+"|"+t]||[])]; if(!ps.length) return "";
   return `<ul class="picks">${ps.map(p=>{
@@ -128,7 +136,7 @@ function renderDay(){
   const food=x.food.length?`<div class="food"><h3>Food picks from your notes</h3><ul>${x.food.map(f=>`<li><a href="${f[1]}" target="_blank" rel="noopener">${esc(f[0])}</a></li>`).join("")}</ul></div>`:"";
   $("#dayView").innerHTML=`<div class="dayhead"><h2>${x.dow} ${x.d} Oct · ${esc(x.title)}</h2>
     <p class="path">${esc(x.path)}</p>
-    <div class="facts"><span class="fact"><b>${x.km}</b> driving</span><span class="fact"><b>${x.drive}</b> behind the wheel</span></div>${weatherBlock(x.d)}</div>
+    <div class="facts"><span class="fact"><b>${x.km}</b> driving</span><span class="fact"><b>${x.drive}</b> behind the wheel</span></div>${weatherBlock(x.d)}${runBlock(x.d)}</div>
     <ol class="tl">${items}</ol>
     ${s?`<div class="stay"><h3>Tonight: ${esc(s.name)}</h3><p>${esc(s.place)} · ${esc(s.style)}</p>${addrBlock(s)}</div>`:`<div class="stay"><h3>Tonight: in the air</h3><p>KIX 18:25 → home 00:05</p></div>`}
     ${food}`;

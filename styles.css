@@ -95,6 +95,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .wxn{margin:8px 0 0;font-size:.9rem}
 .wxsrc{margin:6px 0 0;font-size:.76rem;color:var(--muted)}
 .wxsrc a{color:var(--ai)}
+.run{margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.runh{margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.runr{margin:6px 0 0;font-size:.9rem}
 .wxmain+.wxmain{margin-top:8px}
 .wxsrc .copy{margin-left:4px}
 .err{color:var(--yuzu);font-size:.86rem}
