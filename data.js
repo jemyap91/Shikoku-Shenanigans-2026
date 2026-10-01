@@ -193,6 +193,32 @@ const CAR_DIRECTIONS = [
 ];
 const CAR_TIMING = "You land 14:35. Allow 45–60 min for immigration, bags and customs, then ~20 min to the shop, so you'll arrive around 15:45–16:00. Pickup is booked for 16:30: call the shop to ask about collecting early. Shop hours 08:00–20:00 daily; no airport shuttle.";
 
+/* Optional morning runs, 2.5–5 km, starting and ending at that night's stay.
+   km is approximate: the Maps link plots the walking route so you can check the exact distance.
+   wp: [start, ...waypoints, finish] as Google Maps search text. */
+const RUNS = {
+ 3:{when:"06:45–07:30, before breakfast",name:"Shinmachi River boardwalk + Central Park",km:"~4.5 km",
+    route:"From the house, follow the Shinmachi River boardwalk east, cross to Tokushima Central Park (castle ruins) for its flat 2 km loop, then back along the river.",
+    note:"Flat and well lit. Sunrise ~05:55.",
+    wp:["3-101 Saiwaicho, Tokushima","Shinmachi Boardwalk, Tokushima","Tokushima Central Park","3-101 Saiwaicho, Tokushima"]},
+ 5:{when:"07:15–08:15, before breakfast",name:"Kagami River and Kochi Castle",km:"~4.5 km",
+    route:"South from the hotel to the Kagami River and run the riverside path west, then cut north to the Kochi Castle Otemon gate and back down Otesuji.",
+    note:"Riverside stretch is car-free. Castle grounds open early; the keep doesn't, so save that for 09:30.",
+    wp:["2-1-13 Honmachi, Kochi","Kagami River, Kochi","Kochi Castle Otemon","2-1-13 Honmachi, Kochi"]},
+ 7:{when:"07:00–07:45, before breakfast",name:"Hiji River loop with castle views",km:"~3.5 km",
+    route:"Through the old town to Ozu Castle, cross the Hiji River and run the Hijikawa Ryokuchi riverbank park opposite the castle, then back over Ozu Bridge.",
+    note:"Best castle view in town from the south bank. Start from your Airbnb; the address isn't in the doc yet.",
+    wp:["Ozu Castle, Ozu, Ehime","Hijikawa Ryokuchi Park, Ozu","Ozu Bridge, Ozu, Ehime","Ozu Castle, Ozu, Ehime"]},
+ 8:{when:"07:15–08:00, before breakfast",name:"Gururi Shiroyama loop",km:"~4.5 km",
+    route:"Five minutes from the hotel to the castle hill, then the city's official 4 km loop around the base of Shiroyama Park, past the moats of Horinouchi.",
+    note:"Popular with local runners and lit at night. Cut it to the 1.9 km Horinouchi moat loop if you're short on time.",
+    wp:["3-3-5 Ichibancho, Matsuyama","Horinouchi Park, Matsuyama","Matsuyama Castle Ninomaru Garden","3-3-5 Ichibancho, Matsuyama"]},
+ 11:{when:"07:30–08:30, before the outlets open",name:"Rinku Park seaside promenade",km:"~4–5 km",
+    route:"West past Rinku Town Station to the shore, then south along the Rinku Park promenade with the airport bridge and Awaji across the water. Turn back at halfway on your watch.",
+    note:"Flat, open 24 h, free. Senan Marble Beach is further south if you want to stretch to ~6 km. Leaves time to shower before the outlets open at 10:00.",
+    wp:["5-3 Wakamiyacho, Izumisano","Rinku Park, Izumisano","5-3 Wakamiyacho, Izumisano"]}
+};
+
 /* Places to fetch live weather for, per day of October: [name, lat, lon] */
 const WX_SPOTS = {
  2:[["Tokushima",34.07,134.55]],
